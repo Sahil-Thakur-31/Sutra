@@ -1,26 +1,176 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-bg: #faf7f2;
+  --color-bg-elevated: #ffffff;
+  --color-fg: #211c16;
+  --color-fg-muted: #7a7167;
+  --color-fg-subtle: #a89f93;
+  --color-border: #e8e0d4;
+  --color-accent: #d97a3f;
+  --color-accent-hover: #c26a33;
+  --color-accent-soft: #fbead9;
+  --color-accent-fg: #fffaf5;
+  --color-sage: #5f7d6b;
+  --color-sage-soft: #e3ebe5;
+  --color-danger: #c1503f;
+  --color-danger-soft: #f8e4df;
+  --shadow-color: 30 20 10;
+
+  /* Grocery category tag colors. */
+  --color-cat-blue: #3f6f9e;
+  --color-cat-blue-soft: #e1eaf3;
+  --color-cat-amber: #a8791f;
+  --color-cat-amber-soft: #f3e8cf;
+  --color-cat-rose: #b1485f;
+  --color-cat-rose-soft: #f3dfe3;
+  --color-cat-slate: #5c6773;
+  --color-cat-slate-soft: #e4e8eb;
+  --color-cat-neutral: #7a7167;
+  --color-cat-neutral-soft: #ece7de;
+
+  /* Native <option> popups render with their own light, theme-independent
+     surface in most browsers, so these are pinned and NOT overridden in the
+     dark-mode block below -- see the dropdown contrast bug this fixed. */
+  --color-option-fg: #211c16;
+  --color-option-bg: #ffffff;
+}
+
+/* System preference applies automatically -- unless the user has picked an
+   explicit theme (data-theme on <html>, set by ThemeProvider), in which case
+   that choice wins in both directions. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #17140f;
+    --color-bg-elevated: #211d17;
+    --color-fg: #f3ede2;
+    --color-fg-muted: #a89d8d;
+    --color-fg-subtle: #6f6557;
+    --color-border: #33291f;
+    --color-accent: #e8935a;
+    --color-accent-hover: #f0a56f;
+    --color-accent-soft: #3a2a1c;
+    --color-accent-fg: #1c1006;
+    --color-sage: #8bab97;
+    --color-sage-soft: #223129;
+    --color-danger: #e08573;
+    --color-danger-soft: #3a2119;
+    --shadow-color: 0 0 0;
+
+    --color-cat-blue: #7fabd6;
+    --color-cat-blue-soft: #26333f;
+    --color-cat-amber: #d1ab5e;
+    --color-cat-amber-soft: #362c19;
+    --color-cat-rose: #dd8a9c;
+    --color-cat-rose-soft: #3a2129;
+    --color-cat-slate: #a6b1bd;
+    --color-cat-slate-soft: #262b30;
+    --color-cat-neutral: #a89d8d;
+    --color-cat-neutral-soft: #2b2620;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #17140f;
+  --color-bg-elevated: #211d17;
+  --color-fg: #f3ede2;
+  --color-fg-muted: #a89d8d;
+  --color-fg-subtle: #6f6557;
+  --color-border: #33291f;
+  --color-accent: #e8935a;
+  --color-accent-hover: #f0a56f;
+  --color-accent-soft: #3a2a1c;
+  --color-accent-fg: #1c1006;
+  --color-sage: #8bab97;
+  --color-sage-soft: #223129;
+  --color-danger: #e08573;
+  --color-danger-soft: #3a2119;
+  --shadow-color: 0 0 0;
+
+  --color-cat-blue: #7fabd6;
+  --color-cat-blue-soft: #26333f;
+  --color-cat-amber: #d1ab5e;
+  --color-cat-amber-soft: #362c19;
+  --color-cat-rose: #dd8a9c;
+  --color-cat-rose-soft: #3a2129;
+  --color-cat-slate: #a6b1bd;
+  --color-cat-slate-soft: #262b30;
+  --color-cat-neutral: #a89d8d;
+  --color-cat-neutral-soft: #2b2620;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--color-bg);
+  --color-bg-elevated: var(--color-bg-elevated);
+  --color-fg: var(--color-fg);
+  --color-fg-muted: var(--color-fg-muted);
+  --color-fg-subtle: var(--color-fg-subtle);
+  --color-border: var(--color-border);
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-soft: var(--color-accent-soft);
+  --color-accent-fg: var(--color-accent-fg);
+  --color-sage: var(--color-sage);
+  --color-sage-soft: var(--color-sage-soft);
+  --color-danger: var(--color-danger);
+  --color-danger-soft: var(--color-danger-soft);
+  --color-cat-blue: var(--color-cat-blue);
+  --color-cat-blue-soft: var(--color-cat-blue-soft);
+  --color-cat-amber: var(--color-cat-amber);
+  --color-cat-amber-soft: var(--color-cat-amber-soft);
+  --color-cat-rose: var(--color-cat-rose);
+  --color-cat-rose-soft: var(--color-cat-rose-soft);
+  --color-cat-slate: var(--color-cat-slate);
+  --color-cat-slate-soft: var(--color-cat-slate-soft);
+  --color-cat-neutral: var(--color-cat-neutral);
+  --color-cat-neutral-soft: var(--color-cat-neutral-soft);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+}
+
+::selection {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+}
+
+@keyframes float-blob {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(3%, -4%) scale(1.06);
+  }
+  66% {
+    transform: translate(-2%, 3%) scale(0.96);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animate-float-blob {
+  animation: float-blob 22s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-border) 30%,
+    color-mix(in srgb, var(--color-border) 40%, transparent) 45%,
+    var(--color-border) 60%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
 }
