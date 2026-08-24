@@ -4,6 +4,7 @@ import { getDb } from "@/lib/mongo/client";
 import { getUidFromRequest } from "@/lib/auth/session";
 import { requireMembership } from "@/lib/household/membership";
 import { toContributionDTO, type ContributionDoc, type FundDoc } from "@/lib/household/fund";
+import { publish } from "@/lib/realtime/broadcaster";
 
 export async function GET(
   request: NextRequest,
@@ -83,6 +84,8 @@ export async function POST(
     ])
     .toArray();
   const totalSaved = totalAgg[0]?.total ?? 0;
+
+  publish(householdId, { type: "contribution-added", fundId, totalSaved, contribution });
 
   return NextResponse.json({ contribution, totalSaved });
 }

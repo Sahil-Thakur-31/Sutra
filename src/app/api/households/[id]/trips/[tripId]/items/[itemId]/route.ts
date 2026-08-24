@@ -4,6 +4,7 @@ import { getDb } from "@/lib/mongo/client";
 import { getUidFromRequest } from "@/lib/auth/session";
 import { requireMembership } from "@/lib/household/membership";
 import { toPackingItemDTO, type PackingItemDoc } from "@/lib/household/trip";
+import { publish } from "@/lib/realtime/broadcaster";
 
 type Params = { params: Promise<{ id: string; tripId: string; itemId: string }> };
 
@@ -34,7 +35,10 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   );
   if (!updated) return NextResponse.json({ error: "Item not found." }, { status: 404 });
 
-  return NextResponse.json({ item: toPackingItemDTO(updated) });
+  const item = toPackingItemDTO(updated);
+  publish(householdId, { type: "packing-item-updated", tripId, item });
+
+  return NextResponse.json({ item });
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {
@@ -52,6 +56,8 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     .collection<PackingItemDoc>("packingItems")
     .deleteOne({ _id: new ObjectId(itemId), householdId, tripId });
   if (result.deletedCount === 0) return NextResponse.json({ error: "Item not found." }, { status: 404 });
+
+  publish(householdId, { type: "packing-item-removed", tripId, itemId });
 
   return NextResponse.json({ ok: true });
 }

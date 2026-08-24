@@ -11,6 +11,8 @@ import type {
   WishlistItemDTO,
   HabitDTO,
   PollDTO,
+  ContributionDTO,
+  PackingItemDTO,
 } from "@/lib/types";
 
 export type GroceryEvent =
@@ -68,6 +70,17 @@ export type PollEvent =
   | { type: "poll-updated"; poll: PollDTO }
   | { type: "poll-removed"; pollId: string };
 
+// Funds/Trips only broadcast the granular, genuinely-collaborative action
+// within an already-selected parent (contributing; packing) -- fund/trip
+// create-delete stays on the existing fetch + optimistic-local pattern,
+// same as e.g. recipes.
+export type FundEvent = { type: "contribution-added"; fundId: string; totalSaved: number; contribution: ContributionDTO };
+
+export type TripEvent =
+  | { type: "packing-item-added"; tripId: string; item: PackingItemDTO }
+  | { type: "packing-item-updated"; tripId: string; item: PackingItemDTO }
+  | { type: "packing-item-removed"; tripId: string; itemId: string };
+
 // One SSE stream per household carries every domain's events -- the client
 // filters by `type`. Add new domains' event unions here as they're built.
 export type HouseholdEvent =
@@ -82,7 +95,9 @@ export type HouseholdEvent =
   | VaultEvent
   | WishlistEvent
   | HabitEvent
-  | PollEvent;
+  | PollEvent
+  | FundEvent
+  | TripEvent;
 
 type Listener = (event: HouseholdEvent) => void;
 

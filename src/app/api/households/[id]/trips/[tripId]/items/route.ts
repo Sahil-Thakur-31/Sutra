@@ -4,6 +4,7 @@ import { getDb } from "@/lib/mongo/client";
 import { getUidFromRequest } from "@/lib/auth/session";
 import { requireMembership } from "@/lib/household/membership";
 import { toPackingItemDTO, type PackingItemDoc } from "@/lib/household/trip";
+import { publish } from "@/lib/realtime/broadcaster";
 
 export async function GET(
   request: NextRequest,
@@ -74,6 +75,8 @@ export async function POST(
 
   const insertResult = await db.collection<PackingItemDoc>("packingItems").insertOne(newDoc);
   const item = toPackingItemDTO({ _id: insertResult.insertedId, ...newDoc });
+
+  publish(householdId, { type: "packing-item-added", tripId, item });
 
   return NextResponse.json({ item });
 }

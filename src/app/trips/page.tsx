@@ -58,6 +58,31 @@ export default function TripsPage() {
     };
   }, [household, selectedTripId]);
 
+  useEffect(() => {
+    if (!household || !selectedTripId) return;
+
+    const source = new EventSource(`/api/households/${household.id}/stream`);
+    source.onmessage = (event) => {
+      const data = JSON.parse(event.data) as
+        | { type: "packing-item-added"; tripId: string; item: PackingItemDTO }
+        | { type: "packing-item-updated"; tripId: string; item: PackingItemDTO }
+        | { type: "packing-item-removed"; tripId: string; itemId: string }
+        | { type: "other"; tripId: undefined };
+
+      if (data.tripId !== selectedTripId) return;
+
+      if (data.type === "packing-item-added") {
+        setItems((prev) => (prev.some((i) => i.id === data.item.id) ? prev : [data.item, ...prev]));
+      } else if (data.type === "packing-item-updated") {
+        setItems((prev) => prev.map((i) => (i.id === data.item.id ? data.item : i)));
+      } else if (data.type === "packing-item-removed") {
+        setItems((prev) => prev.filter((i) => i.id !== data.itemId));
+      }
+    };
+
+    return () => source.close();
+  }, [household, selectedTripId]);
+
   function handleTripCreated(trip: TripDTO) {
     setTrips((prev) => [trip, ...prev]);
     setSelectedTripId(trip.id);

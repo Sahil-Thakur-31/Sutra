@@ -58,6 +58,27 @@ export default function FundsPage() {
     };
   }, [household, selectedId]);
 
+  useEffect(() => {
+    if (!household || !selectedId) return;
+
+    const source = new EventSource(`/api/households/${household.id}/stream`);
+    source.onmessage = (event) => {
+      const data = JSON.parse(event.data) as {
+        type: "contribution-added";
+        fundId: string;
+        totalSaved: number;
+        contribution: ContributionDTO;
+      };
+
+      if (data.type !== "contribution-added" || data.fundId !== selectedId) return;
+
+      setFunds((prev) => prev.map((f) => (f.id === data.fundId ? { ...f, totalSaved: data.totalSaved } : f)));
+      setContributions((prev) => (prev.some((c) => c.id === data.contribution.id) ? prev : [data.contribution, ...prev]));
+    };
+
+    return () => source.close();
+  }, [household, selectedId]);
+
   function handleFundCreated(fund: FundDTO) {
     setFunds((prev) => [fund, ...prev]);
     setSelectedId(fund.id);
